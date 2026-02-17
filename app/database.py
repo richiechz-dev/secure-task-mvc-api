@@ -13,7 +13,7 @@ class Base(DeclarativeBase): # La clase Base sirve para declarar todos los model
     pass
 
 
-# engine es la instancia que nos permite crear nuestra nuestra connection
+# engine es la instancia que nos permite crear nuestra nuestra connection o gestor de conexiones
 engine = create_engine(sqlite_url, connect_arg = connect_arg)
 SessionLocal = sessionmaker(bind=engine)    #SessionLocal es un objeto fabrica, pues implementa el patron factory
 
