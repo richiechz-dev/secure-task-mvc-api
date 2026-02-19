@@ -19,4 +19,5 @@ class UserOut(UserBase):
     
     # Importante ya que permite que Pydantic lea los modelos de SQLAlchemy
     # (En Pydantic v2 se usa model_config = {"from_attributes": True})
-    model_config = {"from_attributes": True}
+    class Config:
+        from_attributes = True  # Pydantic v2
