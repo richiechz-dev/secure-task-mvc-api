@@ -12,7 +12,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 # endpoint para registrar un usuario
 @router.post("/register", response_model=UserOut, status_code=HTTP_201_CREATED)
-async def register(user: UserCreate, db: Session = Depends(get_db)):
+def register(user: UserCreate, db: Session = Depends(get_db)):
     # 1. Consulta a la base de datos si el usuario existe por email o username
     existing_user = db.execute(
         select(User).where(
