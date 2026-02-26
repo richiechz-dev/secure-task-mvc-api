@@ -1,6 +1,6 @@
 # Modelo token, que representa la tabla "tokens" en la base de datos
 
-from sqlalchemy import Integer, ForeignKey, DateTime
+from sqlalchemy import Integer, ForeignKey, DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 from datetime import datetime, timedelta, timezone
@@ -11,7 +11,8 @@ TOKEN_LIFETIME = timedelta(hours=1) #timedelta es una clase de la biblio datetim
 class Token(Base):
     __tablename__ = "tokens"
     
-    key : Mapped[int] = mapped_column(Integer, primary_key=True)
+    id : Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    key : Mapped[str] = mapped_column(String)
     user_id : Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),
             default=lambda: datetime.now(timezone.utc), 
