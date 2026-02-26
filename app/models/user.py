@@ -7,10 +7,10 @@ from app.database import Base
 class User(Base):
     __tablename__ = "users"
     
-    id : Mapped[int] = mapped_column(Integer, primary_key=True)
-    username : Mapped[str] = mapped_column(String(30))
-    email : Mapped[str] = mapped_column(String(120))
-    hashed_password : Mapped[str] = mapped_column(String(120))
+    id : Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    username : Mapped[str] = mapped_column(String(30), unique=True, nullable=False)
+    email : Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    hashed_password : Mapped[str] = mapped_column(String(120), nullable=False)
     is_active : Mapped[bool] = mapped_column(Boolean, default=True)
 
 # Relaciones: "back_populates" debe coincidir con el nombre en el otro modelo
