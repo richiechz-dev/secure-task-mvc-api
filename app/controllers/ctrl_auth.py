@@ -1,14 +1,26 @@
+
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
 from sqlalchemy.orm.session import Session
-from starlette.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from starlette.status import (
+    HTTP_201_CREATED,
+    HTTP_400_BAD_REQUEST,
+    HTTP_401_UNAUTHORIZED,
+) # Son clases pilares de Starlette, que son usadas por el framework FastAPI
 
 from app.database import get_db
+from app.models.token import Token
 from app.models.user import User
-from app.utils.security import hash_password
+from app.utils.security import ( # Formato automatico con ruff suguiendo las normas de PEP8?
+    generate_secure_token,
+    hash_password,
+    verify_password,
+)
 from app.views.user_view import UserCreate, UserOut
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
 
 # endpoint para registrar un usuario
 @router.post("/register", response_model=UserOut, status_code=HTTP_201_CREATED)
@@ -40,3 +52,29 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
 
     return new_user
+
+
+@router.post("/login")
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    
+    user = db.execute(
+        select(User).where(User.username == form_data.username)
+    ).scalar_one()  # Al consultar basicamente sqlachemy crear un objeto y lo llena con los atributos que le estamos solicitando
+
+    true_password = verify_password(
+        form_data.password, user.hashed_password
+    )  # funcion que verifica y regresa true o false. Le pasamos dos argumentos, la contraseña de formulario que envia el usuario y el hash que tenemos en la bd.
+    if not user or not true_password:
+        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="No autorizado")
+
+    token_key = generate_secure_token()
+
+    new_token = Token(
+        key=token_key,
+        user_id=user.id,
+    )
+
+    db.add(new_token)
+    db.commit()
+
+    return {"access_token": token_key, "token_bearer": "bearer"}
