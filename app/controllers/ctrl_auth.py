@@ -59,12 +59,14 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     
     user = db.execute(
         select(User).where(User.username == form_data.username)
-    ).scalar_one()  # Al consultar basicamente sqlachemy crear un objeto y lo llena con los atributos que le estamos solicitando
-
+    ).scalar_one_or_none()  # Al consultar basicamente sqlachemy crear un objeto y lo llena con los atributos que le estamos solicitando
+    if user is None:
+        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="No autorizado")
+        
     true_password = verify_password(
         form_data.password, user.hashed_password
     )  # funcion que verifica y regresa true o false. Le pasamos dos argumentos, la contraseña de formulario que envia el usuario y el hash que tenemos en la bd.
-    if not user or not true_password:
+    if not true_password:
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="No autorizado")
 
     token_key = generate_secure_token()
@@ -77,4 +79,4 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     db.add(new_token)
     db.commit()
 
-    return {"access_token": token_key, "token_bearer": "bearer"}
+    return {"access_token": token_key, "token_type": "bearer"}
