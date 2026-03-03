@@ -9,8 +9,7 @@ def on_startup():
     Base.metadata.create_all(bind=engine)
 
 
-app = FastAPI(on_startup=[on_startup])
-app.title = "SecureTask API"
+app = FastAPI(title="SecureTask API", on_startup=[on_startup])
 app.include_router(ctrl_auth.router)
 app.include_router(ctrl_task.router_task)
 
