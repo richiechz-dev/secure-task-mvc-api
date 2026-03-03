@@ -27,7 +27,9 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="No autorizado")
 
     now = datetime.now(timezone.utc)
-    if db_token.expired_at < now:
+    
+    db_utc = db_token.expired_at.replace(tzinfo=timezone.utc)  # Aseguramos que expired_at esté en UTC para la comparación (Solo es tema de sqlite, en postgres no es necesario). Ya que SQLALCHEMY 
+    if db_utc < now:
         # Eliminar token expirado para limpieza
         try:
             db.delete(db_token)
