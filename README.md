@@ -87,8 +87,9 @@ uv run fastapi dev app/main.py
 
 ## Ejemplo de uso
 <details>
-  <img src="docs/imgs/01.png" alt="Swagger Login Example">
-  <img src="docs/imgs/02.png" alt="Swagger Get all tasks Example">
+  <summary>Haz clic para ver las capturas de Swagger</summary>
+  <img src="docs/imgs/01.png" alt="Swagger Login Example" width="50%">
+  <img src="docs/imgs/02.png" alt="Swagger Get all tasks Example" width="50%">
 </details>
 
 ## Mejoras para el aprendizaje
